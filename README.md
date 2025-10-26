@@ -33,7 +33,6 @@ cp .env.example .env
 ALCHEMY_API_KEY=your_alchemy_api_key_here
 MNEMONIC_1=your first twelve word mnemonic phrase goes here
 MNEMONIC_2=your second twelve word mnemonic phrase goes here
-MNEMONIC_3=your third twelve word mnemonic phrase goes here
 WALLETS_PER_MNEMONIC=1
 ```
 
@@ -131,30 +130,28 @@ The following contracts are pre-configured in [src/config/contracts.ts](src/conf
 ### Environment Variables
 
 - `ALCHEMY_API_KEY` (required): Your Alchemy API key for Ethereum Mainnet
-- `MNEMONIC_1`, `MNEMONIC_2`, `MNEMONIC_3`, etc. (required): Your 12 or 24-word mnemonic phrases
+- `MNEMONIC_1`, `MNEMONIC_2`, etc. (required): Your 12 or 24-word mnemonic phrases
   - Add as many as you need, numbered sequentially starting from 1
   - The tool will automatically detect all mnemonics (stops at the first gap)
 - `WALLETS_PER_MNEMONIC` (optional): Number of wallets to derive from each mnemonic (default: 1)
 
 #### Multi-Mnemonic Configuration Examples
 
-**Example 1: Three separate wallets (one from each mnemonic)**
+**Example 1: Two separate wallets (one from each mnemonic)**
 ```env
 MNEMONIC_1=first mnemonic phrase here...
 MNEMONIC_2=second mnemonic phrase here...
-MNEMONIC_3=third mnemonic phrase here...
 WALLETS_PER_MNEMONIC=1
 ```
-Result: 3 total wallets
+Result: 2 total wallets
 
-**Example 2: Six wallets total (two from each of three mnemonics)**
+**Example 2: Four wallets total (two from each of three mnemonics)**
 ```env
 MNEMONIC_1=first mnemonic phrase here...
 MNEMONIC_2=second mnemonic phrase here...
-MNEMONIC_3=third mnemonic phrase here...
 WALLETS_PER_MNEMONIC=2
 ```
-Result: 6 total wallets
+Result: 4 total wallets
 
 **Example 3: Single mnemonic with multiple wallets**
 ```env

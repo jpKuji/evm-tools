@@ -6,7 +6,7 @@ dotenv.config();
 
 /**
  * Loads all mnemonics from environment variables
- * Looks for MNEMONIC_1, MNEMONIC_2, MNEMONIC_3, etc.
+ * Looks for MNEMONIC_1, MNEMONIC_2, etc.
  * @returns Array of mnemonic phrases
  * @throws Error if no mnemonics are found
  */
