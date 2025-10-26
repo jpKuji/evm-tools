@@ -220,7 +220,7 @@ export const CONTRACTS = {
 Make sure you've created a `.env` file and added your Alchemy API key.
 
 ### "No mnemonics found in environment variables"
-Add at least one mnemonic to your `.env` file as `MNEMONIC_1`. Make sure it's a valid 12 or 24-word phrase. You can add more as `MNEMONIC_2`, `MNEMONIC_3`, etc.
+Add at least one mnemonic to your `.env` file as `MNEMONIC_1`. Make sure it's a valid 12 or 24-word phrase. You can add more as `MNEMONIC_2`, etc.
 
 ### "Insufficient funds for gas"
 Ensure your wallets have enough ETH to cover gas fees for the approval transactions.
