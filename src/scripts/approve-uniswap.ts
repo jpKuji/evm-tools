@@ -21,6 +21,7 @@ import {
 import {
   approveForMultipleWallets,
   displayApprovalSummary,
+  ApprovalResult,
 } from '../tools/approve.js';
 import { CONTRACTS } from '../config/contracts.js';
 
@@ -76,31 +77,46 @@ async function main() {
       process.exit(0);
     }
 
-    // Step 5: Prepare token addresses to approve
+    // Step 5: Prepare token addresses and spenders to approve
     const tokensToApprove = [CONTRACTS.USDC, CONTRACTS.VULT];
-
-    const spender = CONTRACTS.UNISWAP_V3_POSITION_MANAGER;
+    const spenders = [
+      { name: 'Uniswap V3 Position Manager', address: CONTRACTS.UNISWAP_V3_POSITION_MANAGER },
+      { name: 'Uniswap V3 Swap Router', address: CONTRACTS.UNISWAP_V3_SWAP_ROUTER },
+    ];
 
     console.log('\n📋 Approval Configuration:');
-    console.log(`   - USDC: ${CONTRACTS.USDC}`);
-    console.log(`   - VULT: ${CONTRACTS.VULT}`);
-    console.log(`   - Spender: ${spender}`);
-    console.log(`   - Approval Amount: Unlimited (max uint256)\n`);
+    console.log(`   - Tokens: USDC, VULT`);
+    console.log(`   - Spenders:`);
+    spenders.forEach((spender) => {
+      console.log(`     • ${spender.name}: ${spender.address}`);
+    });
+    console.log(`   - Approval Amount: Unlimited (max uint256)`);
+    console.log(`   - Total approvals per wallet: ${tokensToApprove.length * spenders.length}\n`);
 
     // Warning
     console.log('⚠️  WARNING: This will send transactions from your wallets.');
     console.log('   Make sure you have sufficient ETH for gas fees.\n');
 
-    // Step 6: Execute approvals
-    const results = await approveForMultipleWallets(
-      wallets,
-      tokensToApprove,
-      spender,
-      true // Wait for confirmations
-    );
+    // Step 6: Execute approvals for all spenders
+    const allResults: ApprovalResult[] = [];
+
+    for (const spender of spenders) {
+      console.log(`\n${'='.repeat(70)}`);
+      console.log(`APPROVING FOR: ${spender.name.toUpperCase()}`);
+      console.log('='.repeat(70));
+
+      const results = await approveForMultipleWallets(
+        wallets,
+        tokensToApprove,
+        spender.address,
+        true // Wait for confirmations
+      );
+
+      allResults.push(...results);
+    }
 
     // Step 7: Display summary
-    displayApprovalSummary(results);
+    displayApprovalSummary(allResults);
 
     console.log('\n✅ Approval process completed!\n');
   } catch (error) {

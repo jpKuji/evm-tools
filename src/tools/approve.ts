@@ -6,6 +6,7 @@ import { ERC20_ABI, MAX_UINT256 } from '../config/contracts.js';
  */
 export interface ApprovalResult {
   success: boolean;
+  skipped: boolean;
   txHash?: string;
   error?: string;
   walletAddress: string;
@@ -46,6 +47,7 @@ export async function approveToken(
 ): Promise<ApprovalResult> {
   const result: ApprovalResult = {
     success: false,
+    skipped: false,
     walletAddress: wallet.address,
     tokenAddress,
     spenderAddress,
@@ -59,14 +61,15 @@ export async function approveToken(
     const symbol = await tokenContract.symbol();
     const decimals = await tokenContract.decimals();
 
-    console.log(`\n  → Approving ${symbol} for ${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}`);
+    console.log(`\n  → Approving ${symbol}...`);
 
     // Check current allowance
     const currentAllowance = await checkAllowance(wallet, tokenAddress, spenderAddress);
 
     if (currentAllowance === MAX_UINT256) {
-      console.log(`    ✓ ${symbol} already has unlimited approval`);
+      console.log(`    ✓ ${symbol} already has unlimited approval - skipping`);
       result.success = true;
+      result.skipped = true;
       return result;
     }
 
@@ -172,14 +175,16 @@ export async function approveForMultipleWallets(
  * @param results Array of ApprovalResult
  */
 export function displayApprovalSummary(results: ApprovalResult[]): void {
-  const successful = results.filter((r) => r.success).length;
+  const successful = results.filter((r) => r.success && !r.skipped).length;
+  const skipped = results.filter((r) => r.skipped).length;
   const failed = results.filter((r) => !r.success).length;
 
   console.log(`\n${'='.repeat(70)}`);
   console.log('APPROVAL SUMMARY');
   console.log('='.repeat(70));
-  console.log(`Total approvals: ${results.length}`);
+  console.log(`Total approvals processed: ${results.length}`);
   console.log(`✓ Successful: ${successful}`);
+  console.log(`⏭ Already Approved (Skipped): ${skipped}`);
   console.log(`✗ Failed: ${failed}`);
 
   if (failed > 0) {

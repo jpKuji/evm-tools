@@ -40,7 +40,7 @@ WALLETS_PER_MNEMONIC=1
 
 ### Approve Tokens for Uniswap
 
-The approval tool allows you to pre-approve USDC and VULT tokens for the Uniswap V3 Position Manager across multiple wallets from multiple mnemonics. This is useful for setting up sniper bots or preparing wallets for trading.
+The approval tool allows you to pre-approve USDC and VULT tokens for both the Uniswap V3 Position Manager and Swap Router across multiple wallets from multiple mnemonics. This is useful for setting up sniper bots or preparing wallets for trading.
 
 ```bash
 pnpm approve
@@ -52,13 +52,19 @@ This command will:
 3. Derive wallets from each mnemonic (configurable via `WALLETS_PER_MNEMONIC`)
 4. **Display wallet addresses and balances** grouped by mnemonic
 5. **Ask for confirmation** - you can review the wallets and cancel if needed
-6. Approve unlimited USDC and VULT spending for Uniswap V3 Position Manager
-7. Wait for transaction confirmations
-8. Display a summary of all approvals
+6. Approve unlimited USDC and VULT spending for:
+   - Uniswap V3 Position Manager
+   - Uniswap V3 Swap Router
+7. **Smart skip**: Already approved tokens are automatically skipped (no unnecessary transactions)
+8. Wait for transaction confirmations
+9. Display a detailed summary showing successful, skipped, and failed approvals
 
-**Interactive Confirmation**: The tool will show you all derived wallet addresses with their ETH balances and ask you to confirm before proceeding with any transactions. This gives you a chance to verify everything is correct and that you have sufficient gas fees.
+**Key Features**:
+- **Interactive Confirmation**: The tool shows you all wallet addresses with their ETH balances and asks you to confirm before proceeding
+- **Smart Approval Checking**: Automatically detects existing unlimited approvals and skips them to save gas fees
+- **Comprehensive Coverage**: Approves for both Position Manager (for liquidity) and Swap Router (for swaps)
 
-**Example**: With 3 mnemonics and `WALLETS_PER_MNEMONIC=1`, you'll have 3 total wallets (1 from each mnemonic).
+**Example**: With 3 mnemonics and `WALLETS_PER_MNEMONIC=1`, you'll have 3 total wallets. Each wallet will process up to 4 approvals (USDC + VULT for 2 contracts = 4 total).
 
 #### Example Output
 
@@ -84,6 +90,38 @@ Wallet 3 (MNEMONIC_3, Derivation Index: 0):
 ⚠️  Please review the wallet addresses and balances above.
 
 ? Do you want to proceed with the approval process? › (y/N)
+
+📋 Approval Configuration:
+   - Tokens: USDC, VULT
+   - Spenders:
+     • Uniswap V3 Position Manager: 0xC36442...11FE88
+     • Uniswap V3 Swap Router: 0xE59242...861564
+   - Approval Amount: Unlimited (max uint256)
+   - Total approvals per wallet: 4
+
+======================================================================
+APPROVING FOR: UNISWAP V3 POSITION MANAGER
+======================================================================
+
+[Wallet 1/3] 0x1234567890abcdef1234567890abcdef12345678
+
+  → Approving USDC...
+    ✓ USDC already has unlimited approval - skipping
+
+  → Approving VULT...
+    ⏳ Transaction sent: 0xabc...def
+    ✓ VULT approval confirmed (Block: 19123456)
+
+...
+
+======================================================================
+APPROVAL SUMMARY
+======================================================================
+Total approvals processed: 12
+✓ Successful: 6
+⏭ Already Approved (Skipped): 5
+✗ Failed: 1
+======================================================================
 ```
 
 ### Build the Project
@@ -125,6 +163,7 @@ The following contracts are pre-configured in [src/config/contracts.ts](src/conf
 - **USDC**: `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`
 - **VULT**: `0xb788144DF611029C60b859DF47e79B7726C4DEBa`
 - **Uniswap V3 Position Manager**: `0xC36442b4a4522E871399CD717aBDD847Ab11FE88`
+- **Uniswap V3 Swap Router**: `0xE592427A0AEce92De3Edee1F18E0157C05861564`
 - **USDC/VULT Pair**: `0x6Df52cC6E2E6f6531E4ceB4b083CF49864A89020`
 
 ### Environment Variables
