@@ -19,16 +19,16 @@ export interface ApprovalResult {
  * @param wallet Wallet instance
  * @param tokenAddress ERC20 token contract address
  * @param spenderAddress Address that will be approved to spend tokens
- * @returns Current allowance as string
+ * @returns Current allowance as bigint
  */
 export async function checkAllowance(
   wallet: Wallet,
   tokenAddress: string,
   spenderAddress: string
-): Promise<string> {
+): Promise<bigint> {
   const tokenContract = new Contract(tokenAddress, ERC20_ABI, wallet);
   const allowance = await tokenContract.allowance(wallet.address, spenderAddress);
-  return allowance.toString();
+  return allowance;
 }
 
 /**
@@ -66,14 +66,14 @@ export async function approveToken(
     // Check current allowance
     const currentAllowance = await checkAllowance(wallet, tokenAddress, spenderAddress);
 
-    if (currentAllowance === MAX_UINT256) {
+    if (currentAllowance >= MAX_UINT256) {
       console.log(`    ✓ ${symbol} already has unlimited approval - skipping`);
       result.success = true;
       result.skipped = true;
       return result;
     }
 
-    // Send approval transaction
+    // Send approval transaction (use MAX_UINT256 directly as it's now a BigInt)
     const tx = await tokenContract.approve(spenderAddress, MAX_UINT256);
     result.txHash = tx.hash;
 

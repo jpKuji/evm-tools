@@ -1,3 +1,5 @@
+import { MaxUint256 } from 'ethers';
+
 /**
  * Contract addresses for Ethereum Mainnet
  */
@@ -5,6 +7,7 @@ export const CONTRACTS = {
   // Token contracts
   USDC: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
   VULT: '0xb788144DF611029C60b859DF47e79B7726C4DEBa',
+  WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
 
   // Uniswap V3 contracts
   UNISWAP_V3_POSITION_MANAGER: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
@@ -35,6 +38,11 @@ export const ERC20_ABI = [
 ] as const;
 
 /**
- * Maximum uint256 value for unlimited approvals
+ * Maximum uint256 value for unlimited approvals (as BigInt)
  */
-export const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+export { MaxUint256 as MAX_UINT256 };
+
+/**
+ * Maximum uint256 value as hex string for transactions
+ */
+export const MAX_UINT256_HEX = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';

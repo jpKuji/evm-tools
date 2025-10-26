@@ -40,7 +40,7 @@ WALLETS_PER_MNEMONIC=1
 
 ### Approve Tokens for Uniswap
 
-The approval tool allows you to pre-approve USDC and VULT tokens for both the Uniswap V3 Position Manager and Swap Router across multiple wallets from multiple mnemonics. This is useful for setting up sniper bots or preparing wallets for trading.
+The approval tool allows you to pre-approve tokens (USDC, VULT, WETH) for both the Uniswap V3 Position Manager and Swap Router across multiple wallets from multiple mnemonics. This is useful for setting up sniper bots or preparing wallets for trading.
 
 ```bash
 pnpm approve
@@ -51,20 +51,24 @@ This command will:
 2. Load all configured mnemonics (MNEMONIC_1, MNEMONIC_2, etc.)
 3. Derive wallets from each mnemonic (configurable via `WALLETS_PER_MNEMONIC`)
 4. **Display wallet addresses and balances** grouped by mnemonic
-5. **Ask for confirmation** - you can review the wallets and cancel if needed
-6. Approve unlimited USDC and VULT spending for:
+5. **Interactive token selection** - choose which tokens to approve (USDC, VULT, WETH)
+6. Show approval configuration with selected tokens
+7. **Ask for final confirmation** - review everything before proceeding
+8. Approve unlimited token spending for:
    - Uniswap V3 Position Manager
    - Uniswap V3 Swap Router
-7. **Smart skip**: Already approved tokens are automatically skipped (no unnecessary transactions)
-8. Wait for transaction confirmations
-9. Display a detailed summary showing successful, skipped, and failed approvals
+9. **Smart skip**: Already approved tokens are automatically skipped (no unnecessary transactions)
+10. Wait for transaction confirmations
+11. Display a detailed summary showing successful, skipped, and failed approvals
 
 **Key Features**:
+- **Interactive Token Selection**: Choose which tokens to approve each time you run the script (all selected by default)
 - **Interactive Confirmation**: The tool shows you all wallet addresses with their ETH balances and asks you to confirm before proceeding
 - **Smart Approval Checking**: Automatically detects existing unlimited approvals and skips them to save gas fees
 - **Comprehensive Coverage**: Approves for both Position Manager (for liquidity) and Swap Router (for swaps)
+- **WETH Support**: Included for scenarios involving wrapped ETH
 
-**Example**: With 3 mnemonics and `WALLETS_PER_MNEMONIC=1`, you'll have 3 total wallets. Each wallet will process up to 4 approvals (USDC + VULT for 2 contracts = 4 total).
+**Example**: With 3 mnemonics, `WALLETS_PER_MNEMONIC=1`, and all 3 tokens selected, you'll have 3 total wallets. Each wallet will process up to 6 approvals (3 tokens × 2 contracts = 6 total).
 
 #### Example Output
 
@@ -87,17 +91,29 @@ Wallet 3 (MNEMONIC_3, Derivation Index: 0):
 
 ======================================================================
 
-⚠️  Please review the wallet addresses and balances above.
+======================================================================
 
-? Do you want to proceed with the approval process? › (y/N)
+📋 Select tokens to approve:
+
+? Select tokens to approve (space to select/deselect, enter to confirm) ›
+◉ USDC
+◉ VULT
+◉ WETH
+
+✓ Selected tokens: USDC, VULT, WETH
 
 📋 Approval Configuration:
-   - Tokens: USDC, VULT
+   - Tokens: USDC, VULT, WETH
    - Spenders:
      • Uniswap V3 Position Manager: 0xC36442...11FE88
      • Uniswap V3 Swap Router: 0xE59242...861564
    - Approval Amount: Unlimited (max uint256)
-   - Total approvals per wallet: 4
+   - Total approvals per wallet: 6
+
+⚠️  WARNING: This will send transactions from your wallets.
+   Make sure you have sufficient ETH for gas fees.
+
+? Do you want to proceed with the approval process? › (y/N)
 
 ======================================================================
 APPROVING FOR: UNISWAP V3 POSITION MANAGER
@@ -162,6 +178,7 @@ The following contracts are pre-configured in [src/config/contracts.ts](src/conf
 
 - **USDC**: `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`
 - **VULT**: `0xb788144DF611029C60b859DF47e79B7726C4DEBa`
+- **WETH**: `0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2`
 - **Uniswap V3 Position Manager**: `0xC36442b4a4522E871399CD717aBDD847Ab11FE88`
 - **Uniswap V3 Swap Router**: `0xE592427A0AEce92De3Edee1F18E0157C05861564`
 - **USDC/VULT Pair**: `0x6Df52cC6E2E6f6531E4ceB4b083CF49864A89020`

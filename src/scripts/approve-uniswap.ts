@@ -61,31 +61,50 @@ async function main() {
     // Display wallet information
     await displayWalletInfo(wallets);
 
-    // Step 4: Ask for confirmation before proceeding
-    console.log('⚠️  Please review the wallet addresses and balances above.\n');
+    // Step 4: Ask user to select which tokens to approve
+    console.log('📋 Select tokens to approve:\n');
 
-    const response = await prompts({
-      type: 'confirm',
-      name: 'proceed',
-      message: 'Do you want to proceed with the approval process?',
-      initial: false,
+    const availableTokens = [
+      { title: 'USDC', value: CONTRACTS.USDC, selected: true },
+      { title: 'VULT', value: CONTRACTS.VULT, selected: true },
+      { title: 'WETH', value: CONTRACTS.WETH, selected: true },
+    ];
+
+    const tokenSelection = await prompts({
+      type: 'multiselect',
+      name: 'tokens',
+      message: 'Select tokens to approve (space to select/deselect, enter to confirm)',
+      choices: availableTokens,
+      min: 1,
+      instructions: false,
+      hint: '- Space to toggle. Enter to submit'
     });
 
-    // Handle user cancellation (Ctrl+C or 'No')
-    if (response.proceed === undefined || !response.proceed) {
+    // Handle user cancellation (Ctrl+C)
+    if (tokenSelection.tokens === undefined) {
       console.log('\n❌ Approval process cancelled by user.\n');
       process.exit(0);
     }
 
-    // Step 5: Prepare token addresses and spenders to approve
-    const tokensToApprove = [CONTRACTS.USDC, CONTRACTS.VULT];
+    const tokensToApprove = tokenSelection.tokens;
+    const selectedTokenNames = availableTokens
+      .filter(t => tokensToApprove.includes(t.value))
+      .map(t => t.title);
+
+    if (tokensToApprove.length === 0) {
+      console.log('\n❌ No tokens selected. Exiting.\n');
+      process.exit(0);
+    }
+
+    console.log(`\n✓ Selected tokens: ${selectedTokenNames.join(', ')}\n`);
     const spenders = [
       { name: 'Uniswap V3 Position Manager', address: CONTRACTS.UNISWAP_V3_POSITION_MANAGER },
       { name: 'Uniswap V3 Swap Router', address: CONTRACTS.UNISWAP_V3_SWAP_ROUTER },
     ];
 
-    console.log('\n📋 Approval Configuration:');
-    console.log(`   - Tokens: USDC, VULT`);
+    // Step 5: Show approval configuration and ask for final confirmation
+    console.log('📋 Approval Configuration:');
+    console.log(`   - Tokens: ${selectedTokenNames.join(', ')}`);
     console.log(`   - Spenders:`);
     spenders.forEach((spender) => {
       console.log(`     • ${spender.name}: ${spender.address}`);
@@ -93,9 +112,22 @@ async function main() {
     console.log(`   - Approval Amount: Unlimited (max uint256)`);
     console.log(`   - Total approvals per wallet: ${tokensToApprove.length * spenders.length}\n`);
 
-    // Warning
+    // Warning and final confirmation
     console.log('⚠️  WARNING: This will send transactions from your wallets.');
     console.log('   Make sure you have sufficient ETH for gas fees.\n');
+
+    const finalConfirmation = await prompts({
+      type: 'confirm',
+      name: 'proceed',
+      message: 'Do you want to proceed with the approval process?',
+      initial: false,
+    });
+
+    // Handle user cancellation (Ctrl+C or 'No')
+    if (finalConfirmation.proceed === undefined || !finalConfirmation.proceed) {
+      console.log('\n❌ Approval process cancelled by user.\n');
+      process.exit(0);
+    }
 
     // Step 6: Execute approvals for all spenders
     const allResults: ApprovalResult[] = [];
