@@ -88,10 +88,13 @@ export function deriveAllWallets(
 }
 
 /**
- * Displays wallet information
+ * Displays wallet information with mnemonic grouping
  * @param wallets Array of Wallet instances
  */
 export async function displayWalletInfo(wallets: Wallet[]): Promise<void> {
+  const walletsPerMnemonic = getWalletsPerMnemonic();
+  const numMnemonics = Math.ceil(wallets.length / walletsPerMnemonic);
+
   console.log(`\n${'='.repeat(70)}`);
   console.log('WALLET INFORMATION');
   console.log('='.repeat(70));
@@ -101,7 +104,16 @@ export async function displayWalletInfo(wallets: Wallet[]): Promise<void> {
     const balance = await wallet.provider?.getBalance(wallet.address);
     const ethBalance = balance ? (Number(balance) / 1e18).toFixed(6) : '0';
 
-    console.log(`\nWallet ${i + 1}:`);
+    // Calculate which mnemonic this wallet belongs to
+    const mnemonicIndex = Math.floor(i / walletsPerMnemonic) + 1;
+    const walletIndexInMnemonic = (i % walletsPerMnemonic) + 1;
+
+    // Add separator between different mnemonics
+    if (i > 0 && i % walletsPerMnemonic === 0) {
+      console.log(''); // Extra spacing between mnemonic groups
+    }
+
+    console.log(`\nWallet ${i + 1} (MNEMONIC_${mnemonicIndex}, Derivation Index: ${walletIndexInMnemonic - 1}):`);
     console.log(`  Address: ${wallet.address}`);
     console.log(`  Balance: ${ethBalance} ETH`);
   }

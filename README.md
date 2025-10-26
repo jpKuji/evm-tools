@@ -51,12 +51,41 @@ This command will:
 1. Connect to Ethereum Mainnet via Alchemy
 2. Load all configured mnemonics (MNEMONIC_1, MNEMONIC_2, etc.)
 3. Derive wallets from each mnemonic (configurable via `WALLETS_PER_MNEMONIC`)
-4. Display wallet addresses and balances
-5. Approve unlimited USDC and VULT spending for Uniswap V3 Position Manager
-6. Wait for transaction confirmations
-7. Display a summary of all approvals
+4. **Display wallet addresses and balances** grouped by mnemonic
+5. **Ask for confirmation** - you can review the wallets and cancel if needed
+6. Approve unlimited USDC and VULT spending for Uniswap V3 Position Manager
+7. Wait for transaction confirmations
+8. Display a summary of all approvals
+
+**Interactive Confirmation**: The tool will show you all derived wallet addresses with their ETH balances and ask you to confirm before proceeding with any transactions. This gives you a chance to verify everything is correct and that you have sufficient gas fees.
 
 **Example**: With 3 mnemonics and `WALLETS_PER_MNEMONIC=1`, you'll have 3 total wallets (1 from each mnemonic).
+
+#### Example Output
+
+```
+======================================================================
+WALLET INFORMATION
+======================================================================
+
+Wallet 1 (MNEMONIC_1, Derivation Index: 0):
+  Address: 0x1234...5678
+  Balance: 0.125000 ETH
+
+Wallet 2 (MNEMONIC_2, Derivation Index: 0):
+  Address: 0xabcd...ef01
+  Balance: 0.089000 ETH
+
+Wallet 3 (MNEMONIC_3, Derivation Index: 0):
+  Address: 0x9876...4321
+  Balance: 0.210000 ETH
+
+======================================================================
+
+⚠️  Please review the wallet addresses and balances above.
+
+? Do you want to proceed with the approval process? › (y/N)
+```
 
 ### Build the Project
 

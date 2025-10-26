@@ -10,6 +10,7 @@
  *   pnpm approve
  */
 
+import prompts from 'prompts';
 import { getProvider, testProviderConnection } from '../utils/provider.js';
 import {
   deriveAllWallets,
@@ -59,22 +60,38 @@ async function main() {
     // Display wallet information
     await displayWalletInfo(wallets);
 
-    // Step 4: Prepare token addresses to approve
+    // Step 4: Ask for confirmation before proceeding
+    console.log('⚠️  Please review the wallet addresses and balances above.\n');
+
+    const response = await prompts({
+      type: 'confirm',
+      name: 'proceed',
+      message: 'Do you want to proceed with the approval process?',
+      initial: false,
+    });
+
+    // Handle user cancellation (Ctrl+C or 'No')
+    if (response.proceed === undefined || !response.proceed) {
+      console.log('\n❌ Approval process cancelled by user.\n');
+      process.exit(0);
+    }
+
+    // Step 5: Prepare token addresses to approve
     const tokensToApprove = [CONTRACTS.USDC, CONTRACTS.VULT];
 
     const spender = CONTRACTS.UNISWAP_V3_POSITION_MANAGER;
 
-    console.log('📋 Approval Configuration:');
+    console.log('\n📋 Approval Configuration:');
     console.log(`   - USDC: ${CONTRACTS.USDC}`);
     console.log(`   - VULT: ${CONTRACTS.VULT}`);
     console.log(`   - Spender: ${spender}`);
     console.log(`   - Approval Amount: Unlimited (max uint256)\n`);
 
-    // Confirmation prompt
+    // Warning
     console.log('⚠️  WARNING: This will send transactions from your wallets.');
     console.log('   Make sure you have sufficient ETH for gas fees.\n');
 
-    // Step 5: Execute approvals
+    // Step 6: Execute approvals
     const results = await approveForMultipleWallets(
       wallets,
       tokensToApprove,
@@ -82,7 +99,7 @@ async function main() {
       true // Wait for confirmations
     );
 
-    // Step 6: Display summary
+    // Step 7: Display summary
     displayApprovalSummary(results);
 
     console.log('\n✅ Approval process completed!\n');
